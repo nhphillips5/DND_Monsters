@@ -1,9 +1,6 @@
 # DND_Monsters
 Predicting a Monsters Challenge Rating
 
-1. Pose a prediction question that can be answered with data and a machine
-   learning model
-
 As a full fledged nerd, not only am I fluent in code, but also in Dungeons and 
 Dragons (or DnD as all the "cool" kids say). I've played the game since I was
 a young child of 5. I always loved looking through the pictures of the fiend 
