@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 import re
+import math
+from sklearn.metrics import (confusion_matrix, f1_score, recall_score,
+        classification_report)
 
 #Files I will be reading in
 filenames = ["monsters/mon1.json",
@@ -84,22 +87,120 @@ mon1['challenge_rating'] = mon1['challenge_rating'].apply(cr_converter)
 mon1.head()
 mon1.challenge_rating.unique()
 
+#Remove NaN Values
+mon1.isnull().sum()
+
+#Because all of the missing values are for stats that simply add to the roll.
+# I'm filling them with 0, if a monster gets no bonus to it's Str. save then
+# it gets +0
+
+mon1.fillna(value = 0, inplace = True)
+
+#Drop the Name column since it doesn't add information
+mon1 = mon1.drop('name', axis = 1)
+
+#Get dummy variables for the rest of the categorical variables.
+mon1 = pd.get_dummies(mon1, columns = ['size', 'type', 'alignment'],
+                        drop_first = True)
+
+#Make challenge_rating the last column
+mon1 = mon1[[col for col in mon1 if col not in ['challenge_rating']]
+                            + ['challenge_rating']]
 
 
 #Run a Random Forest model and see how it does.
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
-#TODO Drop name column and get dummies
-
 features = mon1.columns[:-1]
-response = mon1.columns[-1]
+target = mon1.columns[-1]
 
 X = mon1[features]
-y = mon1[response]
+y = mon1[target]
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3)
 
 rf = RandomForestClassifier()
 rf = rf.fit(X_train, y_train)
+
+y_pred_train = rf.predict(X_train)
+y_pred = rf.predict(X_test)
+y_prob_train = rf.predict_proba(X_train)
+y_prob = rf.predict_proba(X_test)
+
+print(classification_report(y_train, y_pred_train))
+print(recall_score(y_train, y_pred_train, average='macro'))
+print(recall_score(y_train, y_pred_train, average='micro'))
+print(recall_score(y_train, y_pred_train, average=None))
+print(f1_score(y_train, y_pred_train, average='weighted'))
+
+#Let's try a Naive Bayes Classifier
+from sklearn.naive_bayes import MultinomialNB
+
+nb = MultinomialNB()
+nb = nb.fit(X_train, y_train)
+
+y_pred_train = nb.predict(X_train)
+y_pred = nb.predict(X_test)
+y_prob_train = nb.predict_proba(X_train)
+y_prob = nb.predict_proba(X_test)
+
+print(classification_report(y_train, y_pred_train))
+print(recall_score(y_train, y_pred_train, average='macro'))
+print(recall_score(y_train, y_pred_train, average='micro'))
+print(recall_score(y_train, y_pred_train, average=None))
+print(f1_score(y_train, y_pred_train, average='weighted'))
+
+#Let's try Logistic Regression
+from sklearn.linear_model import LogisticRegression
+
+lr = LogisticRegression()
+lr = lr.fit(X_train, y_train)
+
+y_pred_train = lr.predict(X_train)
+y_pred = lr.predict(X_test)
+y_prob_train = lr.predict_proba(X_train)
+y_prob = lr.predict_proba(X_test)
+
+print(classification_report(y_train, y_pred_train))
+print(recall_score(y_train, y_pred_train, average='macro'))
+print(recall_score(y_train, y_pred_train, average='micro'))
+print(recall_score(y_train, y_pred_train, average=None))
+print(f1_score(y_train, y_pred_train, average='weighted'))
+
+#Let's see how K Nearest Neighbors does
+from sklearn.neighbors import KNeighborsClassifier
+
+#knn = KNeighborsClassifier(n_neighbors = int(math.sqrt(len(X_train))))
+#This one didn't do well, let's see out it does with default neighbors.
+knn = KNeighborsClassifier()
+knn = knn.fit(X_train, y_train)
+
+y_pred_train = knn.predict(X_train)
+y_pred = knn.predict(X_test)
+y_prob_train = knn.predict_proba(X_train)
+y_prob = knn.predict_proba(X_test)
+
+print(classification_report(y_train, y_pred_train))
+print(recall_score(y_train, y_pred_train, average='macro'))
+print(recall_score(y_train, y_pred_train, average='micro'))
+print(recall_score(y_train, y_pred_train, average=None))
+print(f1_score(y_train, y_pred_train, average='weighted'))
+
+#Let's try a Support Vector Machine does.
+from sklearn.svm import SVC
+
+svm = SVC(probability = True)
+svm = svm.fit(X_train, y_train)
+
+y_pred_train = svm.predict(X_train)
+y_pred = svm.predict(X_test)
+y_prob_train = svm.predict_proba(X_train)
+y_prob = svm.predict_proba(X_test)
+
+print(classification_report(y_train, y_pred_train))
+print(recall_score(y_train, y_pred_train, average='macro'))
+print(recall_score(y_train, y_pred_train, average='micro'))
+print(recall_score(y_train, y_pred_train, average=None))
+print(f1_score(y_train, y_pred_train, average='weighted'))
 
