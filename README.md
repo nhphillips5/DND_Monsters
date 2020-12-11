@@ -15,7 +15,7 @@ other players). The image below shows the stat block for a dragon with the
 challenge rating highlighted.
 
 ![Challenge Rating Image]
-(https://4.bp.blogspot.com/-RS6NaXZPb6A/V5vQO-IFt9I/AAAAAAAAIZI/3JqykSpr1k4oBkfYMpmoQs0Vq3mLaNSxwCLcB/s1600/challengerating.jpg)
+(Desktop/challengerating.jpg)
 
 2. Collect data to answer your question via webscraping, APIs and/or combining
    several readily available dataset (i.e. kaggle, uci ML repo, etc.)
