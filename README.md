@@ -16,8 +16,45 @@ challenge rating highlighted.
 
 ![Challenge Rating Image](https://4.bp.blogspot.com/-RS6NaXZPb6A/V5vQO-IFt9I/AAAAAAAAIZI/3JqykSpr1k4oBkfYMpmoQs0Vq3mLaNSxwCLcB/s1600/challengerating.jpg)
 
-2. Collect data to answer your question via webscraping, APIs and/or combining
-   several readily available dataset (i.e. kaggle, uci ML repo, etc.)
+This would be a great help to me because I'm constantly making my own monsters 
+for my own players. The issue is I have no idea how hard this will be for them.
+This model would be able to let me know whether I'm about to kill my players or
+give them an easy kill.
+
+The data that I got for this project was from the lovely website [Open5e](https://open5e.com/).
+I went through their Live API and downloaded each of the json files. Let's jump
+into the code! I first import the modules I'll need then read in the data:
+
+```(python)
+import numpy as np
+import pandas as pd
+import re
+import math
+from sklearn.metrics import (confusion_matrix, f1_score, recall_score,
+        classification_report)
+
+#Files I will be reading in
+filenames = ["monsters/mon1.json",
+             "monsters/mon2.json",
+             "monsters/mon3.json",
+             "monsters/mon4.json",
+             "monsters/mon5.json",
+```
+
+There's a total of 22 of those files so I won't put the whole thing.
+
+```(python)
+monsters = []
+for f in filenames:
+    monsters.append(pd.read_json(f))
+
+mon = pd.DataFrame()
+
+mon = mon.append(monsters)
+
+mon = mon['results'].apply(pd.Series)
+```
+
 3. Clean / wrangle your data
 4. Create features
 5. Explore the data through EDA
