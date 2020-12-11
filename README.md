@@ -25,7 +25,7 @@ The data that I got for this project was from the lovely website [Open5e](https:
 I went through their Live API and downloaded each of the json files. Let's jump
 into the code! I first import the modules I'll need then read in the data:
 
-```(python)
+```python
 import numpy as np
 import pandas as pd
 import re
@@ -43,7 +43,7 @@ filenames = ["monsters/mon1.json",
 
 There's a total of 22 of those files so I won't put the whole thing.
 
-```(python)
+```python
 monsters = []
 for f in filenames:
     monsters.append(pd.read_json(f))
