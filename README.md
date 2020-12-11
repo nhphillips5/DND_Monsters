@@ -151,6 +151,33 @@ Now that the data is clean, I have ploted a few of a features again our target
 to get a better idea how they are related. This also helped me get an idea of 
 what variables were the most valuable for our model. 
 
+```python
+#Explore the Data a Bit with various scatter plots
+#This will help me get a sense of what will help the model the most.
+plot1 = mon.plot(x='hit_points', y='challenge_rating', style='o')
+plot2 = mon.plot(x='armor_class', y='challenge_rating', style='o')
+plot3 = mon.plot(x='strength', y='challenge_rating', style='o')
+plot4 = mon.plot(x='dexterity', y='challenge_rating', style='o')
+plot5 = mon.plot(x='constitution', y='challenge_rating', style='o')
+plot6 = mon.plot(x='constitution_save', y='challenge_rating', style='o')
+
+#Let's see how the Features we Created Will Help
+plot7 = mon.plot(x='num_actions', y='challenge_rating', style='o')
+plot8 = mon.plot(x='num_reactions', y='challenge_rating', style='o')
+plot9 = mon.plot(x='num_legendary_actions', y='challenge_rating', style='o')
+plot10 = mon.plot(x='num_special_abilities', y='challenge_rating', style='o')
+plot11 = mon.plot(x='num_spells', y='challenge_rating', style='o')
+```
+
+![Figure_1](https://github.com/nhphillips5/DND_Monsters/blob/main/graphs/Figure_1.png)
+
+![Figure_2](https://github.com/nhphillips5/DND_Monsters/blob/main/graphs/Figure_2.png)
+
+Hit points and Armor Class was what I figured would be the best indicators.
+And as I suspected they were. The other graphs were interesting as well.
+Other than num_actions, the rest of my created features probably didn't add much.
+You can view the rest of the graphs in the graphs folder above.
+
 6. Analyze the data with multiple machine learning approaches
 7. Evaluate each model
 8. Answer the original question
