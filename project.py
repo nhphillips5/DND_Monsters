@@ -42,17 +42,27 @@ mon = mon['results'].apply(pd.Series)
 
 #Make a dataframe that requires minimal Cleaning, if more time add more features
 
-mon1 = mon.drop(['slug', 'subtype','group', 'armor_desc', 'hit_dice', 'speed',
+mon = mon.drop(['slug', 'subtype','group', 'armor_desc', 'hit_dice', 'speed',
     'skills', 'damage_vulnerabilities', 'damage_resistances',
     'damage_immunities', 'condition_immunities', 'senses', 'languages',
-    'actions', 'reactions', 'legendary_desc','legendary_actions',
-    'special_abilities', 'spell_list','img_main', 'document__slug',
-    'document__title', 'document__license_url'], axis = 1)
+    'legendary_desc', 'img_main', 'document__slug', 'document__title',
+    'document__license_url'], axis = 1)
+
+#Create a Number of Features
+mon['num_actions'] = mon['actions'].apply(lambda x: len(x))
+mon['num_reactions'] = mon['reactions'].apply(lambda x: len(x))
+mon['num_legendary_actions'] = mon['legendary_actions'].apply(lambda x: len(x))
+mon['num_special_abilities'] = mon['special_abilities'].apply(lambda x: len(x))
+mon['num_spells'] = mon['spell_list'].apply(lambda x: len(x))
+
+#Remove the Original Columns
+mon = mon.drop(['actions', 'reactions', 'legendary_actions',
+    'special_abilities', 'spell_list'], axis = 1)
 
 #Convert Challenge rating to integers. make the fractions whole numbers and
 #raise the rest accordingly.
 
-mon1.challenge_rating.unique()
+mon.challenge_rating.unique()
 
 #Converting Function
 def cr_converter(x):
@@ -81,42 +91,59 @@ print(cr_converter('1'))
 print(cr_converter('30'))
 
 #Apply it
-mon1['challenge_rating'] = mon1['challenge_rating'].apply(cr_converter)
+mon['challenge_rating'] = mon['challenge_rating'].apply(cr_converter)
 
 #Check Dataset
-mon1.head()
-mon1.challenge_rating.unique()
+mon.head()
+mon.challenge_rating.unique()
 
 #Remove NaN Values
-mon1.isnull().sum()
+mon.isnull().sum()
 
 #Because all of the missing values are for stats that simply add to the roll.
 # I'm filling them with 0, if a monster gets no bonus to it's Str. save then
 # it gets +0
 
-mon1.fillna(value = 0, inplace = True)
+mon.fillna(value = 0, inplace = True)
 
 #Drop the Name column since it doesn't add information
-mon1 = mon1.drop('name', axis = 1)
+mon = mon.drop('name', axis = 1)
 
 #Get dummy variables for the rest of the categorical variables.
-mon1 = pd.get_dummies(mon1, columns = ['size', 'type', 'alignment'],
+mon = pd.get_dummies(mon, columns = ['size', 'type', 'alignment'],
                         drop_first = True)
 
 #Make challenge_rating the last column
-mon1 = mon1[[col for col in mon1 if col not in ['challenge_rating']]
+mon = mon[[col for col in mon if col not in ['challenge_rating']]
                             + ['challenge_rating']]
+
+
+#Explore the Data a Bit with various scatter plots
+#This will help me get a sense of what will help the model the most.
+plot1 = mon.plot(x='hit_points', y='challenge_rating', style='o')
+plot2 = mon.plot(x='armor_class', y='challenge_rating', style='o')
+plot3 = mon.plot(x='strength', y='challenge_rating', style='o')
+plot4 = mon.plot(x='dexterity', y='challenge_rating', style='o')
+plot5 = mon.plot(x='constitution', y='challenge_rating', style='o')
+plot6 = mon.plot(x='constitution_save', y='challenge_rating', style='o')
+
+#Let's see how the Features we Created Will Help
+plot7 = mon.plot(x='num_actions', y='challenge_rating', style='o')
+plot8 = mon.plot(x='num_reactions', y='challenge_rating', style='o')
+plot9 = mon.plot(x='num_legendary_actions', y='challenge_rating', style='o')
+plot10 = mon.plot(x='num_special_abilities', y='challenge_rating', style='o')
+plot11 = mon.plot(x='num_spells', y='challenge_rating', style='o')
 
 
 #Run a Random Forest model and see how it does.
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
-features = mon1.columns[:-1]
-target = mon1.columns[-1]
+features = mon.columns[:-1]
+target = mon.columns[-1]
 
-X = mon1[features]
-y = mon1[target]
+X = mon[features]
+y = mon[target]
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3)
 
