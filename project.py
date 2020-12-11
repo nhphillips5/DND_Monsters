@@ -204,3 +204,21 @@ print(recall_score(y_train, y_pred_train, average='micro'))
 print(recall_score(y_train, y_pred_train, average=None))
 print(f1_score(y_train, y_pred_train, average='weighted'))
 
+#Let's try one last model Gradient Boosted Classifier
+from sklearn.ensemble import GradientBoostingClassifier
+
+gb = GradientBoostingClassifier()
+gb = gb.fit(X_train, y_train)
+
+y_pred_train = gb.predict(X_train)
+y_pred = gb.predict(X_test)
+y_prob_train = gb.predict_proba(X_train)
+y_prob = gb.predict_proba(X_test)
+
+print(classification_report(y_train, y_pred_train))
+print(recall_score(y_train, y_pred_train, average='macro'))
+print(recall_score(y_train, y_pred_train, average='micro'))
+print(recall_score(y_train, y_pred_train, average=None))
+print(f1_score(y_train, y_pred_train, average='weighted'))
+
+
