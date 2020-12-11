@@ -178,8 +178,181 @@ And as I suspected they were. The other graphs were interesting as well.
 Other than num_actions, the rest of my created features probably didn't add much.
 You can view the rest of the graphs in the graphs folder above.
 
-6. Analyze the data with multiple machine learning approaches
-7. Evaluate each model
-8. Answer the original question
-9. Understand and explain potential sources of bias in how your data/model
-   answers your question of interest
+Let's look at all the various classification models I used on this data.
+I started out with a Random Forest model. I started with this kind of model 
+because it was the first model I learned. This model performed very well with an
+f1 score of 98.7% and a macro average recall score of 99.0% I was very impressed.
+
+```python
+#Run a Random Forest model and see how it does.
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+
+features = mon.columns[:-1]
+target = mon.columns[-1]
+
+X = mon[features]
+y = mon[target]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3)
+
+rf = RandomForestClassifier()
+rf = rf.fit(X_train, y_train)
+
+y_pred_train = rf.predict(X_train)
+y_pred = rf.predict(X_test)
+y_prob_train = rf.predict_proba(X_train)
+y_prob = rf.predict_proba(X_test)
+
+print(classification_report(y_train, y_pred_train))
+print(recall_score(y_train, y_pred_train, average='macro'))
+print(recall_score(y_train, y_pred_train, average='micro'))
+print(recall_score(y_train, y_pred_train, average=None))
+print(f1_score(y_train, y_pred_train, average='weighted'))
+```
+Next I tried a Naive Bays Classifier. I thought this would work well, because
+I have had good results with it in the past in natural language processing.
+But it only had a f1 score on 36.6% and a macro average recall score of 33.1%.
+Pretty pitiful compared to the Random Forest.
+
+```python
+#Let's try a Naive Bayes Classifier
+from sklearn.naive_bayes import MultinomialNB
+
+nb = MultinomialNB()
+nb = nb.fit(X_train, y_train)
+
+y_pred_train = nb.predict(X_train)
+y_pred = nb.predict(X_test)
+y_prob_train = nb.predict_proba(X_train)
+y_prob = nb.predict_proba(X_test)
+
+print(classification_report(y_train, y_pred_train))
+print(recall_score(y_train, y_pred_train, average='macro'))
+print(recall_score(y_train, y_pred_train, average='micro'))
+print(recall_score(y_train, y_pred_train, average=None))
+print(f1_score(y_train, y_pred_train, average='weighted'))
+```
+
+The next model I ran was a Logistic Regression model. This model performed
+moderately well. with an f1 score of 48.8% and a macro average recall score of
+63.3% it was pretty middle of the road.
+
+```python
+#Let's try Logistic Regression
+from sklearn.linear_model import LogisticRegression
+
+lr = LogisticRegression()
+lr = lr.fit(X_train, y_train)
+
+y_pred_train = lr.predict(X_train)
+y_pred = lr.predict(X_test)
+y_prob_train = lr.predict_proba(X_train)
+y_prob = lr.predict_proba(X_test)
+
+print(classification_report(y_train, y_pred_train))
+print(recall_score(y_train, y_pred_train, average='macro'))
+print(recall_score(y_train, y_pred_train, average='micro'))
+print(recall_score(y_train, y_pred_train, average=None))
+print(f1_score(y_train, y_pred_train, average='weighted'))
+
+```
+
+Next was a K Nearest Neighbors model. I first ran it with a number of neighbors
+equal to the square root of the number of observations in the training dataset.
+I did this because I heard it was a good rule of thumb. But the results were
+worse that I expected them to be. So I tried running it again with the default
+of 5 neighbors and got much better results (though still not great). It had an
+f1 score of 47.6% and a macro average recall score of 35.9%.
+
+```python
+#Let's see how K Nearest Neighbors does
+from sklearn.neighbors import KNeighborsClassifier
+
+#knn = KNeighborsClassifier(n_neighbors = int(math.sqrt(len(X_train))))
+#This one didn't do well, let's see out it does with default neighbors.
+knn = KNeighborsClassifier()
+knn = knn.fit(X_train, y_train)
+
+y_pred_train = knn.predict(X_train)
+y_pred = knn.predict(X_test)
+y_prob_train = knn.predict_proba(X_train)
+y_prob = knn.predict_proba(X_test)
+
+print(classification_report(y_train, y_pred_train))
+print(recall_score(y_train, y_pred_train, average='macro'))
+print(recall_score(y_train, y_pred_train, average='micro'))
+print(recall_score(y_train, y_pred_train, average=None))
+print(f1_score(y_train, y_pred_train, average='weighted'))
+```
+
+Next I ran a Support Vector Classifier. This model did really well. Not as well
+as Random Forest did but still really well. it had an f1 score of 84.7% and a
+macro average recall score of 91.4%.
+
+```python
+#Let's try a Support Vector Machine.
+from sklearn.svm import SVC
+
+svm = SVC(probability = True)
+svm = svm.fit(X_train, y_train)
+
+y_pred_train = svm.predict(X_train)
+y_pred = svm.predict(X_test)
+y_prob_train = svm.predict_proba(X_train)
+y_prob = svm.predict_proba(X_test)
+
+print(classification_report(y_train, y_pred_train))
+print(recall_score(y_train, y_pred_train, average='macro'))
+print(recall_score(y_train, y_pred_train, average='micro'))
+print(recall_score(y_train, y_pred_train, average=None))
+print(f1_score(y_train, y_pred_train, average='weighted'))
+```
+
+And Last but not least, I tried a Gradient Boosted Classifier. I almost didn't 
+run this model, but boy am I glad I did! With an f1 score of 99.5% and a macro
+average recall score of 99.8% this model clearly takes the cake! I had heard
+the stories of how great gradient boosting was, but here I got to see it's 
+power first hand. It did take much longer to run than the other models, but 
+because I'm not working with gigs of data it wasn't a big deal.
+
+```python
+#Let's try one last model Gradient Boosted Classifier
+from sklearn.ensemble import GradientBoostingClassifier
+
+gb = GradientBoostingClassifier()
+gb = gb.fit(X_train, y_train)
+
+y_pred_train = gb.predict(X_train)
+y_pred = gb.predict(X_test)
+y_prob_train = gb.predict_proba(X_train)
+y_prob = gb.predict_proba(X_test)
+
+print(classification_report(y_train, y_pred_train))
+print(recall_score(y_train, y_pred_train, average='macro'))
+print(recall_score(y_train, y_pred_train, average='micro'))
+print(recall_score(y_train, y_pred_train, average=None))
+print(f1_score(y_train, y_pred_train, average='weighted'))
+```
+
+So, to answer my original question, machine learning can predict the challenge
+rating of monsters in DnD. Not only can it do it, but it can do it well! I'm
+excited to use these models to help me get a better idea of how my monsters 
+compare with those created by professional DnD R & D teams.
+
+There are certainly things I can try to improve with this model though. There
+is a potential source of bias from the data itself. The data is collected from
+three sources, the DnD SRD, and the books *Tome of Foes* and *Creature Codex*.
+The two books are 3rd party sources of monsters and may not be as accurately 
+labeled as official DnD monsters. I would like to get more official data to test
+my models.
+
+Another thing I'd like to work with in creating more features. Getting things
+like number of attacks and damage resistances I think will improve the model
+greatly. I also want to spend some time tuning the hyper parameters of the 
+various models. I think it would be neat if I could crack the code and get a 
+100% model that isn't overfit. Speaking of overfitting, I want to take a closer
+look and make sure my model isn't overfit.
+
+I had a blast working with this data and will continue to tweak and improve it.
+Let me know of any improvements you would make or things you would do differently.
